@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Data } from '../models/waifu.models';
-
+import { Coin, Cryptocoin } from '../module.waifu';
 
 @Component({
   selector: 'app-generic',
@@ -10,63 +9,57 @@ import { Data } from '../models/waifu.models';
   styleUrls: ['./generic.component.css']
 })
 export class GenericComponent {
-  name: string = "" 
-  card: string = ""
-  artist: string = ""
+  //@ts-ignore
+  guy: Coin = {};
+  link: string = "";
+  xxx: Coin[] = []
 
   constructor(private route: ActivatedRoute, public http: HttpClient) {
-    
-    this.route.paramMap.subscribe(this.getRouterParam);
+    this.pleasefuckingwork("");
+    this.http.get("https://api.coinranking.com/v2/coins").subscribe(baller => {
+
+      //@ts-ignoreS
+      this.xxx = baller.data.coins;
+    })
+
+    setInterval(() => {
+
+      const headers = new HttpHeaders()
+        .set('content-type', 'application/json')
+        .set('x-access-token', 'coinranking8312d211410ce80dbcbb14d2307c2444aac6f92b02e57300');
+
+      this.http.get(this.link, { 'headers': headers }).subscribe(baller => {
+        //@ts-ignoreS
+        this.guy = baller.data.coin;
+      })
+
+    }, 1000)
 
   }
- 
-  //Ogni volta che viene invocata la route tracks/:id, l'observable paramMap richiama questo metodo
-  getRouterParam = (params: ParamMap) =>
-  {
-    let uri_param = params.get('id'); //Ottengo l'id dalla ParamMap
-  
 
+  pleasefuckingwork = (a: string) => {
+    if (a != "") {
+      this.link = "https://api.coinranking.com/v2/coin/" + a;
+    } else {
+      this.route.paramMap.subscribe(this.getRouterParam);
+    }
+  }
+
+  getRouterParam = (params: ParamMap) => {
+    let uri_param = params.get('id'); //Ottengo l'id dalla ParamMap
 
     switch (uri_param) {
-      case "CHARIZARD":
-        this.http.get('https://api.pokemontcg.io/v2/cards/gym2-2').subscribe(a=>{
-        console.log(a);
-        //@ts-ignore
-        this.name = a.data.name
-        //@ts-ignore
-        this.card = a.data.images.small
-        //@ts-ignore
-        this.artist = a.data.artist
-
-          
-        })
+      case "btc":
+        this.link = "https://api.coinranking.com/v2/coin/Qwsogvtv82FCd"
         break;
-        case "BLASTOISE":
-          this.http.get('https://api.pokemontcg.io/v2/cards/base1-2').subscribe(a=>{
-          console.log(a);
-          //@ts-ignore
-          this.name = a.data.name
-          //@ts-ignore
-          this.card = a.data.images.small
-          //@ts-ignore
-          this.artist = a.data.artist
+      case "eth":
+        this.link = "https://api.coinranking.com/v2/coin/razxDUgYGNAdQ"
 
-        })
         break;
-        case "VENASAUR":
-          this.http.get('https://api.pokemontcg.io/v2/cards/base6-18').subscribe(a=>{
-          console.log(a);
-          //@ts-ignore
-          this.name = a.data.name
-          //@ts-ignore
-          this.card = a.data.images.small
-          //@ts-ignore
-          this.artist = a.data.artist
-
-        })
-          
+      case "doge":
+        this.link = "https://api.coinranking.com/v2/coin/a91GCGd_u96cF"
         break;
+      //this.service.getTrack()
     }
   }
 }
-
